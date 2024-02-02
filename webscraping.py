@@ -9,7 +9,7 @@ TOKEN = "6693848707:AAH7JEb3QP-bXSsZBmifXBq5NVk_zg_7spM"
 chat_id = "418140655"
 bot = telebot.TeleBot(TOKEN)
 
-sent_urls = []  # List to store the URLs of the sent articles
+sent_urls = []
 
 
 @bot.message_handler(commands=['start'])
@@ -28,13 +28,13 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def get_articles(message):
-    # Check if the message text matches the expected format
+
     if message.text.startswith('Get ') and message.text.endswith(' articles'):
         try:
-            # Get the number from the button text
+
             num_articles = int(message.text.split()[1])
             url = "https://zehabesha.com/topics/get-the-latest-ethiopian-news-analysis-and-opinions-on-zehabesha-stay-informed-about-history-politics-business-health-sports-science-and-entertainment/page/{}/"
-            # Start from page 1 and keep fetching articles until we have enough
+
             page_num = 1
             global sent_urls
             while num_articles > 0:
@@ -55,7 +55,7 @@ def get_articles(message):
                     article = articles[i]
                     heading = article.getText()
                     link = article.find(name="a").get("href")
-                    # Skip the article if it has been sent before
+
                     if link in sent_urls:
                         continue
                     try:
@@ -77,20 +77,20 @@ def get_articles(message):
                     message = f"<b>{heading}</b>\n\nDate: <b>{date}</b>\n\n{textwrap.shorten(
                         story, width=story_max_length, placeholder='...')}\n\n<b>read more: {link}</b>"
                     bot.send_message(chat_id, message, parse_mode='HTML')
-                    # Add the URL to the list of sent URLs
+
                     sent_urls.append(link)
                     num_articles -= 1
                     if num_articles == 0:
                         return
-                    # Move to the next page after processing all articles on the current page
+
                     page_num += 1
 
         except ValueError:
-            # The second word in the message text is not a number
+
             bot.send_message(
                 message.chat.id, "Please choose an option from the custom keyboard.")
     else:
-        # The message text does not match the expected format
+
         bot.send_message(
             message.chat.id, "Please choose an option from the custom keyboard.")
 
